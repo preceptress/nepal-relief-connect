@@ -1,3 +1,5 @@
+import StoryMagazine from './StoryMagazine';
+
 const needItems = [['✚','Medical Assistance'],['♜','Food & Water'],['⌂','Shelter'],['♧','Clothing'],['♨','Rescue / Evacuation'],['⊕','Other Needs']];
 const helpItems = [['♙','Volunteer On-Site'],['♧','Donate Funds'],['♜','Donate Supplies'],['♧','Share Skills'],['▣','Transport / Logistics'],['◇','Other Ways to Help']];
 
@@ -40,5 +42,6 @@ export default function Home(){return <main>
     <section className="panel share-panel"><h2>CONNECT & SHARE</h2><p>Sharing tools will be enabled after verified feeds are active.</p><div className="socials disabled-socials"><i>f</i><i>♥</i><i>☏</i><i>◎</i><i>✉</i></div><div className="broadcast pending-broadcast"><b>○</b><span>Automated broadcasting is not connected.<br/>No updates are currently being distributed.</span></div></section>
   </div></div>
 
+  <StoryMagazine/>
   <footer id="about"><div><b>○</b><span><strong>Pre-launch system</strong><small>Live connections are pending.</small></span></div><div><b>◇</b><span><strong>Codes with Conscience</strong><small>Technology with humanity at heart.</small></span></div><div><b>♙</b><span><strong>Verification first</strong><small>No unverified relief data is published.</small></span></div></footer>
 </main>}
