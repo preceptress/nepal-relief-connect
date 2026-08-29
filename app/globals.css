@@ -20,3 +20,7 @@
 .primary-action{font-size:14px;line-height:1;padding:12px;margin-top:10px;letter-spacing:.35px;box-shadow:0 4px 10px #10203022}
 .primary-action:hover{filter:brightness(.94)}
 @media(max-width:480px){.action-panel h2{font-size:21px}.action-panel>p{font-size:14px}.action-list button{font-size:14px;padding:10px}.primary-action{font-size:15px;padding:13px}}
+
+.feed-panel>h2{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.feed-panel>h2:after{content:'●  Last updated: Aug 29, 2026 · 4:02 PM NPT';color:#526272;background:#eef3f6;border:1px solid #d9e2e8;border-radius:999px;padding:5px 9px;font-size:9px;font-weight:700;letter-spacing:0;white-space:nowrap}
+@media(max-width:480px){.feed-panel>h2{align-items:flex-start;flex-direction:column}.feed-panel>h2:after{font-size:8px}}
