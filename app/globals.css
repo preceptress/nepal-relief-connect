@@ -9,7 +9,6 @@
 
 /* Stronger primary assistance panels */
 .action-panel{position:relative;overflow:hidden;padding:15px;border-width:2px;box-shadow:0 5px 16px #10203016}
-.action-panel:before{content:'';position:absolute;inset:0 0 auto;height:5px;background:currentColor}
 .action-panel.need{border-color:#f0c5c6}.action-panel.help{border-color:#c1e3c7}
 .action-panel h2{font-size:19px;line-height:1.15;margin:3px 0 8px;font-weight:900;letter-spacing:.35px}
 .action-panel h2 span{font-size:29px;vertical-align:middle;margin-right:10px}
