@@ -471,4 +471,6 @@ Use the Sites runtime environment controls, mark sensitive values as secrets, an
 
 ## License
 
-No open-source license has been declared yet. Add a `LICENSE` file before treating this repository as generally redistributable.
+The original software source code and project-authored documentation in this repository are licensed under the [Apache License 2.0](LICENSE).
+
+The Apache License does **not** grant rights to third-party photographs, videos, submitted stories, personal data, organization names, or trademarks. Those materials remain subject to their original owners' terms, contributor permissions, privacy rights, and any attribution shown in the application. Do not reuse them unless you have independently confirmed the necessary rights.
