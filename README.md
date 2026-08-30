@@ -9,6 +9,7 @@ Nepal Relief Connect is a public relief-information and community-story platform
 - [What the application does](#what-the-application-does)
 - [Architecture](#architecture)
 - [Quick start](#quick-start)
+- [Complete environment setup](#complete-environment-setup)
 - [Environment variables](#environment-variables)
 - [Database and storage](#database-and-storage)
 - [Table reference](#table-reference)
@@ -121,6 +122,220 @@ HUMAN_SUPPORT_URL=https://your-secure-support-channel.example
 ```
 
 When selected, the visitor is sent to that support channel. The current application does not persist a live human conversation in D1.
+
+## Complete environment setup
+
+This section is for a contributor starting from a new computer. The project does **not** use Python, Flask, PostgreSQL, `pip`, or a Python virtual environment.
+
+### 1. Install the required tools
+
+Install:
+
+- Git
+- Node.js 22.13 or newer
+- npm, which is included with Node.js
+
+Confirm the installations:
+
+```sh
+git --version
+node --version
+npm --version
+```
+
+If `node --version` reports an older release, upgrade Node before installing dependencies.
+
+### 2. Get the source code
+
+```sh
+git clone https://github.com/preceptress/nepal-relief-connect.git
+cd nepal-relief-connect
+```
+
+Contributors should normally create a branch rather than work directly on `main`:
+
+```sh
+git switch -c your-change-name
+```
+
+### 3. Install JavaScript dependencies
+
+Use the committed lockfile for a repeatable installation:
+
+```sh
+npm ci
+```
+
+Use `npm install` instead when intentionally adding or updating a dependency. Commit the resulting `package-lock.json` change with the dependency change.
+
+### 4. Create the local environment file
+
+```sh
+cp .env.example .env.local
+```
+
+`.env.local` is for secrets and machine-specific values. Do not commit it. The minimum local file may contain:
+
+```dotenv
+ADMIN_EMAILS=you@example.org
+OPENAI_API_KEY=
+OPENAI_CHAT_MODEL=gpt-5.4-mini
+HUMAN_CHAT_AVAILABLE=false
+HUMAN_SUPPORT_URL=
+```
+
+The public site, story browsing, database-backed screens, and most admin development can run without an OpenAI key. Only live AI replies require `OPENAI_API_KEY`.
+
+### 5. Understand local D1 and R2
+
+The application expects two Cloudflare-compatible bindings:
+
+- `DB`: D1/SQLite-compatible structured data
+- `MEDIA`: R2-compatible uploaded objects
+
+The names come from `.openai/hosting.json` and are wired into the local runtime by `vite.config.ts`. Local development uses project-local emulation; contributors do not need to install PostgreSQL or create a database server.
+
+`ensureSchema()` creates missing tables and indexes when an application route first uses the database. To initialize the local schema, start the application and open the home page or any database-backed route.
+
+Local runtime state may be written under generated project directories such as `.wrangler/`. Treat generated local state as disposable unless the project explicitly adopts a fixture or backup workflow.
+
+### 6. Start the development server
+
+```sh
+npm run dev
+```
+
+Open the exact URL printed by the server. It is normally:
+
+```text
+http://localhost:3000/
+```
+
+Keep the terminal running while developing. Source changes should refresh through the Vite development environment.
+
+### 7. Verify the local installation
+
+Check these surfaces:
+
+1. `/` loads the public dashboard and story magazine.
+2. The chat button opens.
+3. `/api/chat` returns JSON describing human availability.
+4. `/api/operations` returns a JSON `records` array.
+5. `/admin` opens in the local development identity.
+6. A story form can be opened without submitting personal test data.
+
+You can also check the public endpoints from another terminal:
+
+```sh
+curl http://localhost:3000/api/operations
+curl http://localhost:3000/api/chat
+```
+
+### 8. Configure AI chat safely
+
+AI chat uses the OpenAI Responses API from the server route. Put an existing project API key in `.env.local` as `OPENAI_API_KEY`; never place it in `ChatWidget.tsx`, browser storage, a URL, or a committed file.
+
+Restart the development server after changing server environment variables. Then open chat and send a non-sensitive test message.
+
+The project defaults to `gpt-5.4-mini`. Change `OPENAI_CHAT_MODEL` only to a model available to the associated OpenAI API project. OpenAI project API keys can be managed through the OpenAI Platform; service-account keys are also project-scoped in the official API reference.
+
+### 9. Configure administrator access
+
+Production admin access requires both:
+
+1. An authenticated user email supplied by the Sites hosting environment.
+2. The same normalized email in the comma-separated `ADMIN_EMAILS` value.
+
+Example:
+
+```dotenv
+ADMIN_EMAILS=coordinator@example.org,editor@example.org
+```
+
+Do not add a shared password to the repository. The local development identity is accepted only to make local admin work possible.
+
+### 10. Configure optional human handoff
+
+The site reports a human as available only when both settings are valid:
+
+```dotenv
+HUMAN_CHAT_AVAILABLE=true
+HUMAN_SUPPORT_URL=https://support.example.org/secure-channel
+```
+
+Use an HTTPS support destination appropriate for the organization. If either value is missing, the widget truthfully reports that human support is offline.
+
+### 11. Run project checks
+
+Before opening a pull request:
+
+```sh
+npm run build
+npm run lint
+```
+
+The build must succeed. If lint reports a known existing issue, do not hide it by disabling rules globally; document it and keep new files clean.
+
+### 12. Prepare a fresh hosted deployment
+
+There are two different contributor paths:
+
+#### Existing Nepal Relief Connect Sites project
+
+Project owners and authorized editors reuse the existing Sites project ID and its platform-managed D1 and R2 resources. Runtime values are configured in Sites, not committed to Git.
+
+Required hosted values are:
+
+```text
+ADMIN_EMAILS
+OPENAI_API_KEY          # secret, when AI chat is enabled
+OPENAI_CHAT_MODEL
+HUMAN_CHAT_AVAILABLE
+HUMAN_SUPPORT_URL       # treat as sensitive when appropriate
+```
+
+Changing a hosted environment value requires a new deployment so the new environment revision becomes active.
+
+#### Independent fork or new organization
+
+Do not deploy a fork using the existing `project_id` in `.openai/hosting.json`. Create a separate OpenAI Sites project with D1 and R2 capabilities, then use the exact project ID returned for that new site. Preserve the logical binding names:
+
+```json
+{
+  "project_id": "the-id-returned-for-your-new-site",
+  "d1": "DB",
+  "r2": "MEDIA"
+}
+```
+
+The project ID above is illustrative only. Never invent or derive a Sites ID. Use the ID supplied by the platform when the site is created or attached.
+
+The deployment package includes the build output, `.openai/hosting.json`, and migrations under `drizzle/`. Apply migrations in numerical order when provisioning storage outside the normal Sites deployment workflow.
+
+### 13. Production verification checklist
+
+After deployment, verify:
+
+- The production URL shows the intended release.
+- Public zero states do not claim unverified live data.
+- `/api/operations` exposes no contact details or administrator email addresses.
+- Admin and story-management routes reject unauthorized accounts.
+- Story uploads remain unavailable publicly until publication.
+- AI chat answers only when the hosted key is configured.
+- Human availability matches the real support-channel status.
+- No `.env.local`, API key, contributor email, or private contact data was committed.
+
+### Common setup problems
+
+| Problem | Likely cause | Resolution |
+| --- | --- | --- |
+| `npm ci` rejects the Node version | Node is older than 22.13 | Upgrade Node and run `npm ci` again. |
+| The server starts but AI chat says it is not configured | `OPENAI_API_KEY` is missing from the running server environment | Add it to `.env.local`, restart development, or configure the hosted secret and redeploy. |
+| Human support always shows offline | The flag, URL, or both are missing | Set both `HUMAN_CHAT_AVAILABLE=true` and a valid `HUMAN_SUPPORT_URL`. |
+| Admin access is denied in production | The authenticated email is absent from `ADMIN_EMAILS` | Add the exact email to the hosted comma-separated allowlist and redeploy. |
+| Uploaded media returns 404 | The story is not published or the R2 object is missing | Publish the associated story after review and verify the `MEDIA` binding. |
+| Local database data disappears | Local emulator state was cleared | Recreate test records; do not treat local emulator data as a production backup. |
+| A fork points at the original site | It retained the original Sites project ID | Create a separate Sites project and replace the hosting metadata with the platform-issued ID. |
 
 ## Environment variables
 
