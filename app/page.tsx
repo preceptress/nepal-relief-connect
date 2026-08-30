@@ -1,4 +1,5 @@
 import StoryMagazine from './StoryMagazine';
+import ChatWidget from './ChatWidget';
 import {ensureSchema,OperationRow} from '@/db';
 
 export const dynamic='force-dynamic';
@@ -53,5 +54,6 @@ export default async function Home(){
   </div></div>
 
   <StoryMagazine/>
+  <ChatWidget/>
   <footer id="about"><div><b>○</b><span><strong>Pre-launch system</strong><small>Live connections are pending.</small></span></div><div><b>◇</b><span><strong>Codes with Conscience</strong><small>Technology with humanity at heart.</small></span></div><div><b>♙</b><span><strong>Verification first</strong><small>No unverified relief data is published.</small></span></div></footer>
 </main>}

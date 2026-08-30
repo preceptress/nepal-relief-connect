@@ -27,6 +27,7 @@ export default function StoryMagazine(){
   },[category,sort,published]);
   const featured=stories.find(s=>s.featured)||stories[0];
   const rest=stories.filter(s=>s.id!==featured?.id);
+  const calloutImages=(stories.length?stories:placeholderStories).slice(0,5);
   const submit=async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();setMessage('Sending your story…');
     const response=await fetch('/api/stories',{method:'POST',body:new FormData(e.currentTarget)});
@@ -38,7 +39,23 @@ export default function StoryMagazine(){
     <header className="magazine-masthead"><div><span>THE HUMAN STORY</span><h2>Stories from Nepal</h2><p>People, places and the moments behind every request for help.</p></div><div className="masthead-actions"><a href="/admin">ADMIN CONTROL</a><button onClick={()=>setShowForm(true)}>＋ SHARE YOUR STORY</button></div></header>
     <div className="story-toolbar"><div className="story-tabs">{['All stories','Community','Resilience','Photo Essay','Voices','Response'].map(c=><button className={category===c?'active':''} onClick={()=>setCategory(c)} key={c}>{c}</button>)}</div><label>Sort <select value={sort} onChange={e=>setSort(e.target.value)}><option>Newest</option><option>Oldest</option><option>Location</option></select></label></div>
     {featured?<div className="story-layout"><article className="lead-story"><StoryVisual story={featured}/><div className="lead-copy"><small>{featured.location} · {new Date(featured.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'})}</small><h3>{featured.title}</h3><p>{featured.excerpt}</p><button>READ THE STORY →</button>{featured.creditUrl!=='#'&&<a href={featured.creditUrl} target="_blank" rel="noreferrer">Placeholder photo: {featured.credit}</a>}</div></article><div className="story-grid">{rest.map(story=><article className="story-card" key={story.id}><StoryVisual story={story}/><small>{story.location} · {new Date(story.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}</small><h3>{story.title}</h3><p>{story.excerpt}</p><div><button>MORE →</button>{story.creditUrl!=='#'&&<a href={story.creditUrl} target="_blank" rel="noreferrer">Photo credit</a>}</div></article>)}</div></div>:<div className="no-stories">No stories in this category yet.</div>}
-    <div className="story-callout"><div><span>YOUR VOICE MATTERS</span><h3>Help the world see the human side of Nepal.</h3><p>Share a story, photograph or short video. Every submission is reviewed before publication to protect contributors and preserve trust.</p></div><button onClick={()=>setShowForm(true)}>SUBMIT A STORY</button></div>
+    <div className="story-callout">
+      <div className="story-callout-copy">
+        <span>YOUR VOICE MATTERS</span>
+        <h3>Help the world see<br/>the human side of Nepal.</h3>
+        <i aria-hidden="true"/>
+        <p>Share a story, photograph or short video. Every submission is reviewed before publication to protect contributors and preserve trust.</p>
+        <button onClick={()=>setShowForm(true)}>SUBMIT A STORY <b aria-hidden="true">→</b></button>
+      </div>
+      <div className="story-callout-gallery" aria-label="Stories from across Nepal">
+        <div className="story-callout-track">
+          {[...calloutImages,...calloutImages].map((story,index)=><figure key={`${story.id}-${index}`} aria-hidden={index>=calloutImages.length}>
+            <img src={story.image} alt={index<calloutImages.length?`${story.location}: ${story.title}`:''}/>
+          </figure>)}
+        </div>
+        <div className="callout-stamp" aria-hidden="true"><b>⌂</b><span>NEPAL · STORIES · PEOPLE</span></div>
+      </div>
+    </div>
     {showForm&&<div className="story-modal" role="dialog" aria-modal="true" aria-label="Share your story"><form onSubmit={submit}><button type="button" className="modal-close" onClick={()=>setShowForm(false)}>×</button><span>CONTRIBUTE</span><h3>Share your story</h3><p>Submissions are private until reviewed by the Nepal Relief Connect editorial team.</p><div className="form-grid"><label>Your name<input name="author_name" required/></label><label>Email<input name="author_email" type="email" required/></label><label>Story headline<input name="title" required maxLength={120}/></label><label>Location<input name="location" required/></label><label>Category<select name="category"><option>Community</option><option>Resilience</option><option>Photo Essay</option><option>Voices</option><option>Response</option></select></label><label>Photo or short video<input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"/></label></div><label>Your story<textarea name="body" required rows={7}/></label><label className="consent"><input name="consent" type="checkbox" required/> I have permission to share this story and any people shown in the media.</label><button className="submit-story" type="submit">SEND FOR REVIEW</button>{message&&<div className="form-message">{message}</div>}</form></div>}
   </section>;
 }
