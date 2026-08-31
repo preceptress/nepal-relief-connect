@@ -7,11 +7,20 @@ export const dynamic='force-dynamic';
 const needItems = [['✚','Medical Assistance'],['♜','Food & Water'],['⌂','Shelter'],['♧','Clothing'],['♨','Rescue / Evacuation'],['⊕','Other Needs']];
 const helpItems = [['♙','Volunteer On-Site'],['♧','Donate Funds'],['♜','Donate Supplies'],['♧','Share Skills'],['▣','Transport / Logistics'],['◇','Other Ways to Help']];
 
+function RaisedHandIcon() {
+  return <svg className="raised-hand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M18 11V6a2 2 0 0 0-4 0v5"/>
+    <path d="M14 10V4a2 2 0 0 0-4 0v7"/>
+    <path d="M10 10.5V6a2 2 0 0 0-4 0v8"/>
+    <path d="M6 12.5a2 2 0 0 0-4 0V15c0 4.4 3.6 8 8 8h2a8 8 0 0 0 8-8v-3a2 2 0 0 0-4 0v1"/>
+  </svg>;
+}
+
 function ActionPanel({kind}:{kind:'need'|'help'}) {
   const isNeed=kind==='need';
   const items=isNeed?needItems:helpItems;
   return <section className={`panel action-panel ${kind}`}>
-    <h2><span>{isNeed?'♧':'♡'}</span>{isNeed?'I NEED HELP':'I CAN HELP'}</h2>
+    <h2><span>{isNeed?<RaisedHandIcon/>:'♡'}</span>{isNeed?'I NEED HELP':'I CAN HELP'}</h2>
     <p>{isNeed?'Request intake is being prepared.':'Volunteer intake is being prepared.'}</p>
     <div className="action-list">{items.map(([icon,label])=><button disabled key={label}><b>{icon}</b>{label}</button>)}</div>
     <button className="primary-action" disabled>{isNeed?'REQUESTS OPENING SOON':'OFFERS OPENING SOON'}</button>
@@ -36,7 +45,7 @@ export default async function Home(){
   <div className={hasLive?'demo-banner live-data-banner':'demo-banner'}><b>{hasLive?'VERIFIED FEED':'PRE-LAUNCH PREVIEW'}</b><span>{hasLive?'This page displays records published by authorized coordinators.':'No live operational data is connected. All verified feeds currently show zero.'}</span></div>
 
   <header className="hero" id="top">
-    <div className="hero-copy"><div className="eyebrow">DISASTER RESPONSE · NEPAL · PRE-LAUNCH</div><h1>TOGETHER FOR NEPAL <span>🇳🇵</span></h1><h3>Connect. Coordinate. Save Lives.</h3><p>A coordination platform being prepared to connect people in need<br/>with verified people and organizations who can help.</p><div className="hero-buttons"><a href="#needs" className="red-button">♧ <span><b>I NEED HELP</b><small>Preview Request Options</small></span></a><a href="#help" className="green-button">♡ <span><b>I CAN HELP</b><small>Preview Support Options</small></span></a></div></div>
+    <div className="hero-copy"><div className="eyebrow">DISASTER RESPONSE · NEPAL · PRE-LAUNCH</div><h1>TOGETHER FOR NEPAL <span>🇳🇵</span></h1><h3>Connect. Coordinate. Save Lives.</h3><p>A coordination platform being prepared to connect people in need<br/>with verified people and organizations who can help.</p><div className="hero-buttons"><a href="#needs" className="red-button"><RaisedHandIcon/><span><b>I NEED HELP</b><small>Preview Request Options</small></span></a><a href="#help" className="green-button">♡ <span><b>I CAN HELP</b><small>Preview Support Options</small></span></a></div></div>
     <section className={hasLive?'situation':'situation pending'} id="updates"><div className="situation-head"><span><b>LIVE SITUATION UPDATE</b><small>{latestUpdate?`UPDATED ${new Date(latestUpdate.updated_at).toLocaleString()}`:'AWAITING FIRST VERIFIED UPDATE'}</small></span><em>{hasLive?'● VERIFIED':'○ NOT LIVE'}</em></div><div className="stats"><div><span className="red">♧</span><small>People in Need</small><b>{peopleInNeed.toLocaleString()}</b></div><div><span className="blue">⌖</span><small>Active Requests</small><b>{requestRecords.length}</b></div><div><span className="green">✓</span><small>Help Provided</small><b>{published.filter(r=>r.status==='resolved').length}</b></div><div><span className="orange">♙</span><small>Verified Volunteers</small><b>{volunteers.toLocaleString()}</b></div></div><p><b>Latest update:</b> {latestUpdate?latestUpdate.description||latestUpdate.title:'No verified incident reports or operational feeds are connected yet.'}</p><span className="report-pending">{hasLive?'Only coordinator-approved records are shown.':'Situation reports will appear after source verification.'}</span></section>
     <div className="helpline"><b>Important:</b> This site is not yet an emergency service. For immediate danger, contact verified local emergency services. Helpline numbers are pending confirmation.</div>
   </header>

@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-html-link-for-pages */
 import {FormEvent,useCallback,useEffect,useMemo,useState} from 'react';
 
 type Operation={id:string;record_type:string;title:string;description:string;category:string;location:string;contact_name:string;contact_email:string;contact_phone:string;priority:string;status:string;latitude:number|null;longitude:number|null;people_count:number;source:string;created_by:string;created_at:string;updated_at:string;published_at:string|null};
@@ -11,7 +12,7 @@ const emptyForm={record_type:'request',title:'',description:'',category:'',locat
 export default function AdminConsole({adminEmail}:{adminEmail:string}){
   const [module,setModule]=useState('overview'),[records,setRecords]=useState<Operation[]>([]),[counts,setCounts]=useState<Count[]>([]),[storyCounts,setStoryCounts]=useState<Array<{status:string;count:number}>>([]),[recent,setRecent]=useState<Audit[]>([]),[loading,setLoading]=useState(true),[search,setSearch]=useState(''),[statusFilter,setStatusFilter]=useState('all'),[showForm,setShowForm]=useState(false),[form,setForm]=useState({...emptyForm}),[notice,setNotice]=useState(''),[mobileNav,setMobileNav]=useState(false);
   const load=useCallback(async()=>{setLoading(true);const response=await fetch('/api/admin/operations');if(response.ok){const data=await response.json() as {records:Operation[];counts:Count[];storyCounts:Array<{status:string;count:number}>;recent:Audit[]};setRecords(data.records);setCounts(data.counts);setStoryCounts(data.storyCounts);setRecent(data.recent)}setLoading(false)},[]);
-  useEffect(()=>{load()},[load]);
+  useEffect(()=>{let active=true;fetch('/api/admin/operations').then(async response=>response.ok?await response.json() as {records:Operation[];counts:Count[];storyCounts:Array<{status:string;count:number}>;recent:Audit[]}:null).then(data=>{if(active&&data){setRecords(data.records);setCounts(data.counts);setStoryCounts(data.storyCounts);setRecent(data.recent)}if(active)setLoading(false)}).catch(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
   const visible=useMemo(()=>records.filter(r=>(module==='overview'||module==='settings'||module==='stories'||r.record_type===module)&&(statusFilter==='all'||r.status===statusFilter)&&(!search||`${r.title} ${r.location} ${r.description}`.toLowerCase().includes(search.toLowerCase()))),[records,module,statusFilter,search]);
   const count=(type?:string,status?:string)=>counts.filter(c=>(!type||c.record_type===type)&&(!status||c.status===status)).reduce((n,c)=>n+Number(c.count),0);
   const openNew=(type?:string)=>{setForm({...emptyForm,record_type:type&&labels[type]?type:'request'});setShowForm(true)};

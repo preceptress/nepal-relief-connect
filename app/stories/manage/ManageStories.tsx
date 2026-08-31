@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-html-link-for-pages */
 import {useState} from 'react';
 
 type ReviewStory={id:string;title:string;excerpt:string;category:string;location:string;author_name:string;author_email:string;status:string;created_at:string;media_type:string|null};

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+/* eslint-disable @next/next/no-img-element */
 
 const previewRecords=[
   {type:'REQUEST',title:'Verified relief request',location:'Sindhupalchowk',status:'PUBLISHED',tone:'red'},

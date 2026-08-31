@@ -1,4 +1,5 @@
 import {headers} from 'next/headers';
+/* eslint-disable @next/next/no-html-link-for-pages */
 import {ensureSchema,isAdmin,StoryRow} from '@/db';
 import ManageStories from './ManageStories';
 
