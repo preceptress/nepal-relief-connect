@@ -30,7 +30,7 @@ export default async function Home(){
   <nav className="topbar">
     <a className="brand" href="#top"><span className="brand-mark">♡</span><span><strong>NEPAL RELIEF CONNECT</strong><small>CODES WITH CONSCIENCE</small></span></a>
     <div className="navlinks"><a href="#top">HOME</a><a href="#needs">I NEED HELP</a><a href="#help">I CAN HELP</a><a href="#resources">RESOURCES</a><a href="#updates">UPDATES</a><a href="#about">ABOUT</a></div>
-    <div className="nav-actions"><span className={hasLive?'online':'prelaunch'}><i/> {hasLive?'NETWORK ONLINE':'PRE-LAUNCH'}</span><button>EN⌄</button><a className="alert-nav-link" href="#updates">♧ EMERGENCY ALERTS</a><a className="admin-nav-link" href="/admin">ADMIN</a></div>
+    <div className="nav-actions"><span className={hasLive?'online':'prelaunch'}><i/> {hasLive?'NETWORK ONLINE':'PRE-LAUNCH'}</span><button>EN⌄</button><a className="alert-nav-link" href="#updates">♧ EMERGENCY ALERTS</a><a className="admin-nav-link" href="/admin">ADMIN PREVIEW</a></div>
   </nav>
 
   <div className={hasLive?'demo-banner live-data-banner':'demo-banner'}><b>{hasLive?'VERIFIED FEED':'PRE-LAUNCH PREVIEW'}</b><span>{hasLive?'This page displays records published by authorized coordinators.':'No live operational data is connected. All verified feeds currently show zero.'}</span></div>
